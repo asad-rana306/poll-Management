@@ -1,0 +1,32 @@
+.headingBackground {
+    background-color: #1e293b !important;
+    border-bottom: 1px solid #334155;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.textx {
+    letter-spacing: 0.5px;
+    font-weight: 700;
+    color: #f8fafc !important;
+    transition: opacity 0.2s ease;
+}
+
+.textx:hover {
+    opacity: 0.8;
+}
+
+.logoutButton {
+    border-radius: 6px;
+    padding: 6px 16px;
+    border: 1px solid #475569 !important;
+    background-color: transparent !important;
+    color: #94a3b8 !important;
+    transition: all 0.3s ease;
+}
+
+.logoutButton:hover {
+    background-color: #ef4444 !important;
+    border-color: #ef4444 !important;
+    color: white !important;
+}

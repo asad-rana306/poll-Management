@@ -1,0 +1,139 @@
+.BackgroundPage {
+    background-color: #0f172a !important;
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.titleText {
+    color: #f8fafc;
+    font-weight: 800;
+    font-size: 36px;
+    letter-spacing: -1px;
+}
+.tabBottom {
+    border-bottom: 2px solid #1e293b;
+}
+
+.tabs {
+    border-bottom: none;
+    gap: 10px;
+}
+
+.hoveringTab {
+    background-color: transparent !important;
+    color: #94a3b8 !important;
+    border: none !important;
+    border-bottom: 3px solid transparent !important;
+    border-radius: 0 !important;
+    padding: 12px 20px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: all 0.2s ease;
+}
+
+.hoveringTab:hover {
+    color: #f8fafc !important;
+    border-bottom: 3px solid #475569 !important;
+}
+
+.openedTab {
+    color: #38bdf8 !important;
+    border-bottom: 3px solid #38bdf8 !important;
+}
+
+.animation {
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+.cardss {
+    background-color: #1e293b !important;
+    border: 1px solid #334155 !important;
+    border-radius: 16px;
+    transition: transform 0.3s ease;
+}
+
+.QuestionNumber {
+    background-color: #334155 !important;
+    color: #94a3b8;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 20px;
+}
+
+.question{
+    color: #f8fafc !important;
+    font-weight: 600;
+    font-size: 1.25rem;
+    line-height: 1.4;
+}
+
+.Yes{
+    color: #10b981 !important;
+}
+.No{
+    color: #ef4444;
+}
+
+.cardsBackground {
+    background-color: #0f172a;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.YesLine {
+    background: linear-gradient(90deg, #059669, #10b981);
+    font-weight: bold;
+}
+
+.NoLine{
+    background: linear-gradient(90deg, #dc2626, #ef4444);
+    font-weight: bold;
+}
+
+.Circle{
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background-color: #0f172a;
+    border: 5px solid #38bdf8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.2);
+}
+
+.Score{
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #f8fafc;
+}
+
+.overallScore {
+    font-size: 1.2rem;
+    color: #64748b;
+    margin-top: 10px;
+}
+
+.collapsingButton {
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
+    font-size: 1.1rem;
+    padding: 20px;
+    box-shadow: none !important;
+}
+
+.collapsingButton::after {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+.collapsingButton:not(.collapsed) {
+    background-color: #0f172a !important;
+    color: #38bdf8 !important;
+}
+.questionNumber{
+    color: black !important;
+    font-size: 0.9rem !important;
+}
+.answers{
+    margin-left: 42px;
+}

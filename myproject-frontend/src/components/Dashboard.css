@@ -1,0 +1,116 @@
+.backgroundColor {
+    background-color: #031930 !important;
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
+.NavbarColor {
+    background-color: #1e293b !important;
+    border-bottom: 1px solid #334155;
+}
+
+.welcome {
+    color: #f8fafc;
+    font-weight: 700;
+    margin-bottom: 8px;
+    font-size: 28px;
+}
+
+.cretingpoll {
+    background: linear-gradient(135deg, #0ea5e9, rgb(37 99 235 / 0.98));
+    color: white;
+    padding: 12px 24px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 5px 8px rgba(37, 99, 235, 0.4);
+    transition: all 0.2s ease;
+}
+
+.cretingpoll:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.6);
+    color: white;
+}
+
+.polls {
+    background-color: #1e293b !important;
+    border: 1px solid #334155 !important;
+    border-radius: 15px !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+.hovering {
+    transition: border-color 0.3s ease, transform 0.3s ease;
+}
+
+.hovering:hover {
+    border-color: #38bdf8;
+    transform: translateY(-4px);
+}
+
+.bodye {
+    padding: 40px 20px;
+}
+
+.text1 {
+    color: #e2e8f0 !important;
+    font-weight: 600;
+}
+
+.text2 {
+    color: #94a3b8;
+    font-size: 0.95rem;
+}
+
+.poll-list {
+    background-color: transparent;
+    color: #38bdf8 !important;
+    border: 1px solid #38bdf8;
+    border-radius: 8px;
+    font-weight: 500;
+    padding: 10px;
+    transition: all 0.2s ease;
+}
+
+.poll-list:hover {
+    background-color: #38bdf8;
+    color: #0f172a !important;
+}
+
+.icon, .custom-css-empty-icon {
+    font-size: 40px;
+    opacity: 0.8;
+}
+.lastCard{
+    background-color: #1e293b;
+    border-radius: 16px;
+}
+
+.Answer-text{
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #f8fafc;
+}
+
+.resultStatus {
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: #10b981;
+    font-weight: 700;
+}
+
+.resultButton {
+    border-radius: 6px;
+    background-color: #334155;
+    color: #e2e8f0 !important;
+    border: none;
+    padding: 8px 16px;
+    transition: background-color 0.2s ease;
+}
+
+.resultButton:hover {
+    background-color: #475569;
+    color: #af8585 !important;
+}
