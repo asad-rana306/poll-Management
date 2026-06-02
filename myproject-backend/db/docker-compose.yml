@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  db:
+    image: mariadb:latest
+    container_name: myproject-dev-db
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: asdf1234
+      MARIADB_DATABASE: myproject
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./db-data:/var/lib/mysql
