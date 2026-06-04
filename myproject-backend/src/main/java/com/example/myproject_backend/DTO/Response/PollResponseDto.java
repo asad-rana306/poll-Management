@@ -1,8 +1,11 @@
 package com.example.myproject_backend.DTO.Response;
 
+import lombok.Data;
+
 import java.time.LocalDate;
 
-public class PollResponse {
+@Data
+public class PollResponseDto {
     private Long id;
     private String title;
     private LocalDate dueDate;

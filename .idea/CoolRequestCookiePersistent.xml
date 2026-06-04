@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CoolRequestCookiePersistent">
-    <option name="cookies" value="[&#10;  {&#10;    &quot;domain&quot; : &quot;localhost:8080&quot;,&#10;    &quot;infos&quot; : [&#10;      {&#10;        &quot;createTimeMillis&quot; : 1779410409725,&#10;        &quot;raw&quot; : &quot;JSESSIONID=967394984980BEA863455584A52B911A; Path=/; HttpOnly&quot;,&#10;        &quot;requestURL&quot; : &quot;http://localhost:8080/api/auth/login&quot;&#10;      }&#10;    ]&#10;  }&#10;]" />
+    <option name="cookies" value="[&#10;  {&#10;    &quot;domain&quot; : &quot;localhost:8080&quot;,&#10;    &quot;infos&quot; : [&#10;      {&#10;        &quot;createTimeMillis&quot; : 1780524839146,&#10;        &quot;raw&quot; : &quot;JSESSIONID=C51FD1EFD634DACCED60EB4E20524BDE; Path=/; HttpOnly&quot;,&#10;        &quot;requestURL&quot; : &quot;http://localhost:8080/api/poll/create-poll?userName=Asad&quot;&#10;      }&#10;    ]&#10;  }&#10;]" />
   </component>
 </project>

@@ -23,7 +23,7 @@ export default function Login() {
 
             if (response.ok) {
                 localStorage.setItem('basicAuthToken', credentials);
-                console.log("signup successfull");
+                console.log("login successfull");
                 navigate('/dashboard');
             } else {
                 console.error('Invalid credentials');

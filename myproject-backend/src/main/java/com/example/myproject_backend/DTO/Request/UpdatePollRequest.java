@@ -1,10 +1,12 @@
 package com.example.myproject_backend.DTO.Request;
 
+import lombok.Data;
+
 import java.time.LocalDate;
 
-public class CreatePoll {
+@Data
+public class UpdatePollRequest {
     private String title;
-    private String descriptioin;
+    private String description;
     private LocalDate dueDate;
-    private List<QuestionRequest> questions;
 }

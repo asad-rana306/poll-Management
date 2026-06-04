@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../components/CreatePoll.css'
-import '../pages/Navbar.jsx'
+import '../components/CreatePoll.css';
+import '../pages/Navbar.jsx';
 import Navbar from "./Navbar.jsx";
 
 export default function CreatePoll() {
@@ -9,11 +9,12 @@ export default function CreatePoll() {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [dueDate, setDueDate] = useState('');
-    const [questions, setQuestions] = useState([{ text: '', type: 'plain-text' }]);
+    const [questions, setQuestions] = useState([{ text: '', type: 'TEXT' }]);
     const [error, setError] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+
     const handleAddQuestion = () => {
-        setQuestions([...questions, { text: '', type: 'plain-text' }]);
+        setQuestions([...questions, { text: '', type: 'TEXT' }]);
     };
 
     const handleRemoveQuestion = (index) => {
@@ -47,14 +48,36 @@ export default function CreatePoll() {
             return;
         }
 
+        const token = localStorage.getItem('basicAuthToken');
+        if (!token) {
+            setError('You must be logged in to create a poll.');
+            return;
+        }
+
         setIsSubmitting(true);
 
         try {
             const payload = { title, description, dueDate, questions };
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            navigate('/dashboard');
+
+            const response = await fetch('http://localhost:8080/api/poll/create-poll', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Basic ${token}`,
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                navigate('/dashboard');
+            } else if (response.status === 401) {
+                setError('Authentication failed. Please log in again.');
+            } else {
+                setError('Failed to create poll. Title might already be taken.');
+            }
         } catch (err) {
-            setError('Failed to create poll. Title might already be taken.');
+            setError('Network error. Is the server running?');
             console.error(err);
         } finally {
             setIsSubmitting(false);
@@ -71,6 +94,8 @@ export default function CreatePoll() {
                         <h2 className="PageTitle mb-0 ">Create a New Poll</h2>
                     </div>
                 </div>
+
+                {error && <div className="alert alert-danger">{error}</div>}
 
                 <form onSubmit={handleSubmit}>
                     <section className="card shadow-sm mb-5 cardes border-0">
@@ -160,9 +185,10 @@ export default function CreatePoll() {
                                                     value={question.type}
                                                     onChange={(e) => handleQuestionChange(index, 'type', e.target.value)}
                                                 >
-                                                    <option value="plain-text">Text</option>
-                                                    <option value="boolean">Yes or No</option>
-                                                    <option value="numeric">Numbers 1 to 5</option>
+                                                    {/* CRUCIAL FIX: These values must match your Java Enum EXACTLY */}
+                                                    <option value="TEXT">Text</option>
+                                                    <option value="BOOLEAN">Yes or No</option>
+                                                    <option value="NUMERIC">Numbers 1 to 5</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -174,7 +200,7 @@ export default function CreatePoll() {
 
                     <div className="d-grid gap-2 mt-2">
                         <button type="submit" className="btn btn-lg submitButton shadow" disabled={isSubmitting}>
-                            {isSubmitting ? 'Creating Poll' : 'Create Poll'}
+                            {isSubmitting ? 'Creating Poll...' : 'Create Poll'}
                         </button>
                     </div>
                 </form>

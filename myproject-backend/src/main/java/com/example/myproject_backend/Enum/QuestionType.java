@@ -1,7 +1,7 @@
 package com.example.myproject_backend.Enum;
 
 public enum QuestionType {
-    Text,
+    TEXT,
     BOOLEAN,
-    Numeric
+    NUMERIC
 }
