@@ -36,7 +36,7 @@ export default function Dashboard() {
                                         <div className="icon">⏳</div>
                                     </div>
                                     <h5 className="mb-2 text1">Pending Polls</h5>
-                                    <p className="text2 mb-4">You have 3 polls waiting for your response.</p>
+                                    <p className="text2 mb-4">See Your Pending Polls</p>
 
                                     <Link to="/pending-polls" className="btn poll-list w-75">
                                         View Pending Polls
@@ -54,7 +54,7 @@ export default function Dashboard() {
                                         <div className="icon">📝</div>
                                     </div>
                                     <h5 className="mb-2 text1">Created Poll</h5>
-                                    <p className="text2 mb-4">You have created 1 poll. Click the button to look</p>
+                                    <p className="text2 mb-4">See your Created Polls</p>
 
                                     <Link to="/created-poll" className="btn poll-list w-75">
                                         Created Polls

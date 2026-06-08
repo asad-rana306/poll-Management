@@ -11,21 +11,33 @@ export default function PendingPolls() {
 
     useEffect(() => {
         const fetchPendingPolls = async () => {
+            const token = localStorage.getItem('basicAuthToken');
+            if (!token) {
+                navigate('/login');
+                return;
+            }
+
             try {
-                // here i will attach the spring boot api to fetch the poll from the database
-                let fetchedPolls = [
-                    { id: 1, title: 'Critical Thinking', dueDate: '2026-06-01T14:00:00', questionCount: 6 },
-                    { id: 2, title: 'AI Hackathon', dueDate: '2026-05-20T12:00:00', questionCount: 7 },
-                    { id: 3, title: 'Database Query', dueDate: '2026-07-15T23:59:00', questionCount: 9 },
+                const response = await fetch('http://localhost:8080/api/poll/pending', {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Basic ${token}`,
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
 
-
-                ];
-
-                fetchedPolls.sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate));
-
-                setPolls(fetchedPolls);
+                if (response.ok) {
+                    let fetchedPolls = await response.json();
+                    fetchedPolls.sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+                    setPolls(fetchedPolls);
+                } else if (response.status === 401) {
+                    setError('Authentication failed. Please log in again.');
+                } else {
+                    setError('Failed to load pending polls.');
+                }
             } catch (err) {
-                setError('Failed to load pending polls. Please try again later.');
+                setError('Network error. Is the server running?');
                 console.error(err);
             } finally {
                 setIsLoading(false);
@@ -33,7 +45,7 @@ export default function PendingPolls() {
         };
 
         fetchPendingPolls();
-    }, []);
+    }, [navigate]);
 
     const formatDate = (dateString) => {
         const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
@@ -51,7 +63,7 @@ export default function PendingPolls() {
                 </div>
 
                 {error && (
-                    <div className="alert shadow-sm" role="alert">
+                    <div className="alert shadow-sm alert-danger" role="alert">
                         {error}
                     </div>
                 )}
@@ -65,7 +77,7 @@ export default function PendingPolls() {
                     </div>
                 ) : polls.length === 0 ? (
                     <div className="card text-center p-5 lightPageBackground">
-                        <p className="mb-0 text-light">Empty!</p>
+                        <p className="mb-0 text-light">Empty! You have no pending polls to solve.</p>
                     </div>
                 ) : (
                     <div>
@@ -92,7 +104,7 @@ export default function PendingPolls() {
                                                 <div className="d-flex align-items-center">
                                                     <div>
                                                         <span className="textColor1">Questions: </span>
-                                                        <span className="badge fs-5">{poll.questionCount}</span>
+                                                        <span className="badge fs-5">{poll.numberOfQuestions}</span>
                                                     </div>
                                                 </div>
                                             </div>

@@ -15,23 +15,29 @@ export default function ParticipatePoll() {
 
     useEffect(() => {
         const fetchPoll = async () => {
-            try {
-                await new Promise(resolve => setTimeout(resolve, 500));
-                const mockPoll = {
-                    id: id,
-                    title: "Technology Stack",
-                    description: "What is you experience, Please Vote!",
-                    dueDate: "2026-06-01T14:00:00",
-                    questions: [
-                        { id: 101, text: "Which programming language you use?", type: "plain-text" },
-                        { id: 102, text: "Have you ever use Docker?", type: "boolean" },
-                        { id: 103, text: "what is your experience with College (1-5)", type: "numeric" }
-                    ]
-                };
+            const token = localStorage.getItem('basicAuthToken');
+            if (!token) {
+                navigate('/login');
+                return;
+            }
 
-                setPolls(mockPoll);
+            try {
+                const response = await fetch(`http://localhost:8080/api/poll/${id}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Basic ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    setPolls(data);
+                } else {
+                    setError('Failed to load the poll. It may have been deleted or finished.');
+                }
             } catch (err) {
-                setError('Failed to load the poll. It may have been deleted or finished.');
+                setError('Network error. Is the server running?');
                 console.error(err);
             } finally {
                 setIsLoading(false);
@@ -39,7 +45,7 @@ export default function ParticipatePoll() {
         };
 
         fetchPoll();
-    }, [id]);
+    }, [id, navigate]);
 
     const handleAnswerChange = (questionId, value) => {
         setAnswers(prev => ({
@@ -60,13 +66,33 @@ export default function ParticipatePoll() {
         }
         setIsSubmitting(true);
 
+        const formattedAnswers = Object.entries(answers).map(([qId, val]) => ({
+            questionId: parseInt(qId),
+            value: String(val)
+        }));
+
+        const token = localStorage.getItem('basicAuthToken');
+
         try {
-            console.log("Submitting answers for Poll ID:", id, "Answers:", answers);
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            alert("Thank you! Your response has been recorded.");
-            navigate('/pending-polls');
+            const response = await fetch(`http://localhost:8080/api/poll/${id}/submit`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Basic ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ answer: formattedAnswers })
+            });
+
+            if (response.ok) {
+                alert("Thank you! Your response has been recorded.");
+                navigate('/pending-polls');
+            } else {
+                const errorData = await response.json();
+                setError(errorData.message || 'Failed to submit your answers. Have you already answered this?');
+                window.scrollTo(0, 0);
+            }
         } catch (err) {
-            setError('Failed to submit your answers. Please try again.');
+            setError('Network error during submission.');
             console.error(err);
         } finally {
             setIsSubmitting(false);
@@ -85,12 +111,15 @@ export default function ParticipatePoll() {
         );
     }
 
+    if (!poll) return null;
+
     return (
         <div className="min-vh-100 BackgroundPage text-light py-5">
-            <main className="container max-w-3xl ">
+            <Navbar />
+            <main className="container max-w-3xl mt-4">
 
                 {error && (
-                    <div className="alert shadow-sm mb-4" role="alert">
+                    <div className="alert shadow-sm mb-4 alert-danger" role="alert">
                         <strong>Hold on!</strong> {error}
                     </div>
                 )}
@@ -115,8 +144,7 @@ export default function ParticipatePoll() {
                                 </div>
 
                                 <div className="mt-4">
-
-                                    {question.type === 'plain-text' && (
+                                    {question.type === 'TEXT' && (
                                         <textarea
                                             className="form-control plainTextQuestionBoz"
                                             rows="5"
@@ -126,7 +154,7 @@ export default function ParticipatePoll() {
                                         />
                                     )}
 
-                                    {question.type === 'boolean' && (
+                                    {question.type === 'BOOLEAN' && (
                                         <div className="d-flex gap-3 ">
                                             <label className={`optionBox ${answers[question.id] === 'true' ? 'selected-yes' : ''}`}>
                                                 <input
@@ -154,7 +182,7 @@ export default function ParticipatePoll() {
                                         </div>
                                     )}
 
-                                    {question.type === 'numeric' && (
+                                    {question.type === 'NUMERIC' && (
                                         <div>
                                             <div className="d-flex justify-content-between mb-2 px-2 labelTextLast">
                                                 <span>Low</span>
@@ -184,7 +212,6 @@ export default function ParticipatePoll() {
                             </div>
                         </div>
                     ))}
-
 
                     <div className="d-flex justify-content-between align-items-center mt-5">
                         <button type="button" className="btn cancelButton" onClick={() => navigate('/pending-polls')}>

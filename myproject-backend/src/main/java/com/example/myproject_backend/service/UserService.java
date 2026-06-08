@@ -16,9 +16,7 @@ public class UserService {
 
     public List<UserResponseDto> getAllUsersExcept(String currentUsername) {
         return userRepository.findAll().stream()
-                // Filter out the person currently logged in
                 .filter(user -> !user.getUsername().equals(currentUsername))
-                // Convert the remaining users to safe DTOs (no passwords)
                 .map(user -> new UserResponseDto(user.getId(), user.getUsername()))
                 .collect(Collectors.toList());
     }

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import '../components/CreatedPoll.css';
 import Navbar from "./Navbar.jsx";
 
@@ -12,42 +12,69 @@ export default function CreatedPoll() {
     const [showPopUp, setShowPopUp] = useState(false);
     const [searchTxt, setSearchTxt] = useState('');
     const [selectedPoll, setSelectedPoll] = useState(null);
-
-    // this list is a fake list. here spring boot api will added which will fetch the user from the databse
-    const [usersList, setUsersList] = useState([
-        { id: 101, name: 'Alex', invited: false },
-        { id: 102, name: 'Henry', invited: true },
-    ]);
+    const [usersList, setUsersList] = useState([]);
 
     useEffect(() => {
-        const fetchPendingPolls = async () => {
-            try {
-                // here i will attach the spring boot api to fetch the polls to solve from the database
-                let fetchedPolls = [
-                    { id: 1, title: 'Critical Thinking', dueDate: '2026-06-01T14:00:00', questionCount: 6, invitedCount: 12, solvedCount: 4 },
-                    { id: 2, title: 'AI Hackathon', dueDate: '2026-05-20T12:00:00', questionCount: 7, invitedCount: 45, solvedCount: 38 },
-                    { id: 3, title: 'Database Query', dueDate: '2026-07-15T23:59:00', questionCount: 9, invitedCount: 5, solvedCount: 0 },
-                ];
-
-                fetchedPolls.sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate));
-
-                setPolls(fetchedPolls);
-            } catch (err) {
-                setError('Failed to load pending polls. Please try again later.');
-                console.error(err);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchPendingPolls();
+        fetchCreatedPolls();
     }, []);
 
+    const fetchCreatedPolls = async () => {
+        const token = localStorage.getItem('basicAuthToken');
+        if (!token) {
+            navigate('/login');
+            return;
+        }
+
+        try {
+            const response = await fetch('http://localhost:8080/api/poll/created', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Basic ${token}`,
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setPolls(data);
+            } else {
+                setError('Failed to load your polls.');
+            }
+        } catch (err) {
+            setError('Network error. Is the server running?');
+            console.error(err);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const fetchUsers = async () => {
+        const token = localStorage.getItem('basicAuthToken');
+        try {
+            const response = await fetch('http://localhost:8080/api/users', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Basic ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                const mappedUsers = data.map(u => ({ ...u, invited: false }));
+                setUsersList(mappedUsers);
+            }
+        } catch (err) {
+            console.error('Failed to fetch users', err);
+        }
+    };
 
     const openInvitePopUp = (pollId) => {
         setSelectedPoll(pollId);
         setShowPopUp(true);
         setSearchTxt('');
+        fetchUsers();
     };
 
     const closePopUp = () => {
@@ -55,9 +82,27 @@ export default function CreatedPoll() {
         setSelectedPoll(null);
     }
 
-    const handleInviteUser = (userId) => {
-        // Just a fake toggle for the UI
-        setUsersList(usersList.map(u => u.id === userId ? { ...u, invited: true } : u));
+    const handleInviteUser = async (userId, username) => {
+        const token = localStorage.getItem('basicAuthToken');
+
+        try {
+            const response = await fetch(`http://localhost:8080/api/poll/${selectedPoll}/invite`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Basic ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ username: username })
+            });
+
+            if (response.ok) {
+                setUsersList(usersList.map(u => u.id === userId ? { ...u, invited: true } : u));
+            } else {
+                alert("Failed to invite user. They might already be invited.");
+            }
+        } catch (err) {
+            console.error('Network error during invite', err);
+        }
     };
 
     return (
@@ -73,7 +118,7 @@ export default function CreatedPoll() {
                 </div>
 
                 {error && (
-                    <div className="alert shadow-sm" role="alert">
+                    <div className="alert shadow-sm alert-danger" role="alert">
                         {error}
                     </div>
                 )}
@@ -87,7 +132,7 @@ export default function CreatedPoll() {
                     </div>
                 ) : polls.length === 0 ? (
                     <div className="card text-center p-5 lightPageBackground">
-                        <p className="mb-0 text-light">Empty!</p>
+                        <p className="mb-0 text-light">Empty! You haven't created any polls yet.</p>
                     </div>
                 ) : (
                     <div>
@@ -106,22 +151,15 @@ export default function CreatedPoll() {
                                             <div className="mt-2 mb-4 cardInsideCard">
                                                 <div className="d-flex align-items-center mb-2">
                                                     <div>
-                                                        <span className="textColor1">Invited: </span>
-                                                        <span className="dateText">{poll.invitedCount} people</span>
-                                                    </div>
-                                                </div>
-
-                                                <div className="d-flex align-items-center mb-2">
-                                                    <div>
-                                                        <span className="textColor1">Solved: </span>
-                                                        <span className="dateText">{poll.solvedCount}</span>
+                                                        <span className="textColor1">Due Date: </span>
+                                                        <span className="dateText">{new Date(poll.dueDate).toLocaleDateString()}</span>
                                                     </div>
                                                 </div>
 
                                                 <div className="d-flex align-items-center">
                                                     <div>
                                                         <span className="textColor1">Questions: </span>
-                                                        <span className="badge fs-5">{poll.questionCount}</span>
+                                                        <span className="badge fs-5">{poll.numberOfQuestions}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -131,8 +169,9 @@ export default function CreatedPoll() {
                                                     <button
                                                         className="btn btn-outline-info w-100"
                                                         onClick={() => openInvitePopUp(poll.id)}
+                                                        disabled={poll.isFinished}
                                                     >
-                                                        Invite People
+                                                        {poll.isFinished ? 'Poll Closed' : 'Invite People'}
                                                     </button>
                                                 </div>
                                             </div>
@@ -144,7 +183,6 @@ export default function CreatedPoll() {
                     </div>
                 )}
             </main>
-
 
             {showPopUp && (
                 <div style={{
@@ -162,7 +200,6 @@ export default function CreatedPoll() {
                             <input
                                 type="text"
                                 className="form-control bg-dark text-light border-secondary searching"
-                                // lablel: "Search users"
                                 placeholder="Search user"
                                 value={searchTxt}
                                 onChange={(e) => setSearchTxt(e.target.value)}
@@ -171,35 +208,32 @@ export default function CreatedPoll() {
 
                         <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
                             {usersList
+                                .filter(u => u.username.toLowerCase().includes(searchTxt.toLowerCase()))
                                 .map(user => (
                                     <div key={user.id} className="d-flex justify-content-between align-items-center p-2 mb-2" style={{ borderBottom: '1px solid #334155' }}>
                                         <div>
-                                            <div className="text-light fs-5">{user.name}</div>
+                                            <div className="text-light fs-5">{user.username}</div>
                                         </div>
                                         <div>
                                             {user.invited ? (
                                                 <button className="btn btn-sm btn-secondary" disabled>Invited</button>
                                             ) : (
-                                                <button className="btn btn-sm btn-primary" onClick={() => handleInviteUser(user.id)}>
+                                                <button className="btn btn-sm btn-primary" onClick={() => handleInviteUser(user.id, user.username)}>
                                                     + Invite
                                                 </button>
                                             )}
                                         </div>
                                     </div>
                                 ))}
-                            {usersList.filter(u => u.name.toLowerCase().includes(searchTxt.toLowerCase())).length === 0 && (
+                            {usersList.filter(u => u.username.toLowerCase().includes(searchTxt.toLowerCase())).length === 0 && (
                                 <div className="text-center text-muted mt-4">
                                     <p>No users found.</p>
                                 </div>
                             )}
                         </div>
-
-                        <div style={{ display: 'none' }}>ghost div</div>
-
                     </div>
                 </div>
             )}
-            <div style={{display: 'none'}}></div>
         </div>
     );
 }

@@ -3,7 +3,6 @@
   <component name="CoolRequestSetting">
     <option name="serializePaths">
       <list>
-        <option value="$USER_HOME$/.config/.cool-request/request/serialize/921b4ec0d9cf494ab15d17943acfc107" />
         <option value="$USER_HOME$/.config/.cool-request/request/serialize/c26f5096d2484dee8c1a341789e25b68" />
       </list>
     </option>

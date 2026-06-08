@@ -4,6 +4,7 @@ import com.example.myproject_backend.DTO.Request.CreatePollRequest;
 import com.example.myproject_backend.DTO.Request.SubmitPollRequest;
 import com.example.myproject_backend.DTO.Request.UpdatePollRequest;
 import com.example.myproject_backend.DTO.Response.CreatedPollResponseDto;
+import com.example.myproject_backend.DTO.Response.FullPollResponseDto;
 import com.example.myproject_backend.DTO.Response.PendingPollResponse;
 import com.example.myproject_backend.entity.Poll;
 import com.example.myproject_backend.service.PollService;
@@ -28,10 +29,13 @@ public class PollController {
         return ResponseEntity.ok(Map.of("Message", "Poll is Created"));
     }
 
-    @PostMapping("/invite-people")
-    public ResponseEntity<?> invitePeople(@RequestBody long pollId, String inviteUserName, Principal principal){
-        pollService.inviteUser(pollId, principal.getName(), inviteUserName);
-        return ResponseEntity.ok(Map.of("Message", "User is invited" + inviteUserName));
+    @PostMapping("/{pollId}/invite")
+    public ResponseEntity<?> inviteUser(@PathVariable Long pollId, @RequestBody Map<String, String> payload, Principal principal) {
+        String inviteeUsername = payload.get("username");
+        String requesterUsername = principal.getName();
+        pollService.inviteUser(pollId, inviteeUsername, requesterUsername);
+
+        return ResponseEntity.ok(Map.of("message", "User invited successfully"));
     }
 
     @DeleteMapping("/{pollId}")
@@ -70,5 +74,11 @@ public class PollController {
     public ResponseEntity<List<CreatedPollResponseDto>> getCreatedPolls(Principal principal) {
         List<CreatedPollResponseDto> myPolls = pollService.getCreatedPolls(principal.getName());
         return ResponseEntity.ok(myPolls);
+    }
+
+    @GetMapping("/{pollId}")
+    public ResponseEntity<FullPollResponseDto> getPollDetails(@PathVariable Long pollId, Principal principal) {
+        FullPollResponseDto pollDetails = pollService.getPollWithQuestions(pollId, principal.getName());
+        return ResponseEntity.ok(pollDetails);
     }
 }

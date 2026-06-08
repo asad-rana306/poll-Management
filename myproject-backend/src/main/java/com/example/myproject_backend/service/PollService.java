@@ -4,7 +4,9 @@ import com.example.myproject_backend.DTO.Request.CreatePollRequest;
 import com.example.myproject_backend.DTO.Request.SubmitPollRequest;
 import com.example.myproject_backend.DTO.Request.UpdatePollRequest;
 import com.example.myproject_backend.DTO.Response.CreatedPollResponseDto;
+import com.example.myproject_backend.DTO.Response.FullPollResponseDto;
 import com.example.myproject_backend.DTO.Response.PendingPollResponse;
+import com.example.myproject_backend.DTO.Response.QuestionDto;
 import com.example.myproject_backend.Enum.QuestionType;
 import com.example.myproject_backend.entity.*;
 import com.example.myproject_backend.repository.PollRepository;
@@ -15,6 +17,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -118,15 +121,31 @@ public class PollService {
     }
 
     public List<PendingPollResponse> getPendingPolls(String username) {
-        List<Poll> pendingPolls = pollRepository.findPendingPollsForUser(username);
 
-        return pendingPolls.stream()
-                .map(p -> new PendingPollResponse(
-                        p.getId(),
-                        p.getTitle(),
-                        p.getDueDate(),
-                        p.getQuestions().size()))
-                .collect(Collectors.toList());
+        List<Poll> allInvitedPolls = pollRepository.findByInviteesUsernameOrderByDueDateDesc(username);
+        List<PollResponse> userResponses = responseRepository.findByUserUsername(username);
+        List<Long> answeredPollIds = new ArrayList<>();
+        for (PollResponse response : userResponses) {
+            answeredPollIds.add(response.getPoll().getId());
+        }
+        List<Poll> pendingPolls = new ArrayList<>();
+        for (Poll poll : allInvitedPolls) {
+            if (!answeredPollIds.contains(poll.getId())) {
+                pendingPolls.add(poll);
+            }
+        }
+        List<PendingPollResponse> responseDtos = new ArrayList<>();
+        for (Poll p : pendingPolls) {
+            PendingPollResponse dto = new PendingPollResponse(
+                    p.getId(),
+                    p.getTitle(),
+                    p.getDueDate(),
+                    p.getQuestions().size()
+            );
+            responseDtos.add(dto);
+        }
+
+        return responseDtos;
     }
 
     @Transactional
@@ -179,5 +198,21 @@ public class PollService {
                         p.getQuestions().size(),
                         p.isFinished()))
                 .collect(Collectors.toList());
+    }
+
+    public FullPollResponseDto getPollWithQuestions(Long pollId, String username) {
+        Poll poll = pollRepository.findById(pollId)
+                .orElseThrow(() -> new RuntimeException("Poll not found"));
+
+        List<QuestionDto> questionDtos = poll.getQuestions().stream()
+                .map(q -> new QuestionDto(q.getId(), q.getText(), q.getType().name()))
+                .collect(Collectors.toList());
+
+        return new FullPollResponseDto(
+                poll.getId(),
+                poll.getTitle(),
+                poll.getDescription(),
+                questionDtos
+        );
     }
 }
