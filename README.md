@@ -13,7 +13,7 @@ Welcome to the **Polling Management System**, a complete full stack application 
 
 ---
 
-## 📁 System Architecture & Flow
+##  System Architecture & Flow
 
 ### Application Workflow
 **1.** **Authentication:** Users can sign up or log in. Passwords are securely encrypted on the backend, and user sessions are managed accordingly through spring security.
@@ -32,3 +32,27 @@ Welcome to the **Polling Management System**, a complete full stack application 
 
 ---
 
+## Docker
+
+The project is fully containerized using Docker. On single command docker can run all three services.
+
+### **•** Architecture Components
+**1.** **Frontend Container:** Packages the React + Vite static production build and serves it efficiently.
+
+**2.** **Backend Container:** Packages the Java Spring Boot application runtime environment (configured for JDK 25).
+
+**3.** **Database Container:** Deploys an isolated MariaDB instance pre-configured with the required environment schemas.
+
+---
+
+### **•** Main  (`docker-compose.yml`)
+Instead of managing containers individually, a root-level orchestrator file links the frontend, backend, and database services together. It automatically handles networking, exposes the necessary ports, manages persistent data storage, and ensures correct boot ordering (Database → Backend → Frontend).
+
+#### How to Launch the Entire Project
+Open your terminal at the project root and run. Make sure that you are on the project root
+
+```bash
+docker compose up
+```
+### Catch Up
+We need to run the docker-compose.yml from backend/db folder. but he add a functionality in the root docker-compose.yml that the backend wait for the database to run first. As it says healthy the backend run at that time.

@@ -12,6 +12,8 @@ http://localhost:8080/swagger-ui/index.html
     <version>2.8.5</version>
 </dependency>
 ````
+---
+
 <h1>Created APIs</h1>
 
 <h2>1. AuthenticationController</h2>
@@ -24,11 +26,15 @@ A register user can login by sending credentials (username and password)
 
     http://localhost:8080/api/auth/login
 
+---
+
 <h2>2. UserController</h2>
 
 When user have to invite other user he needs a list of user so by this he will a list of users which are save in the database
 
     http://localhost:8080/api/users
+
+---
 
 <h2>3. PollController</h2>
 
@@ -78,6 +84,7 @@ A user can update the poll at any time
     (PUT)
     http://localhost:8080/api/poll/${id}
 
+----
 
 <h2>Use of AI</h2>
 Due to the usage of lombok we added dependency from spring intializr but it was giving error of version so i use AI for that
