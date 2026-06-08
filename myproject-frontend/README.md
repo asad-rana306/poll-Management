@@ -36,9 +36,7 @@ The icons are basically emojis that i got from the whatsapp emoji keypad by sear
 
 Data & Backend
 --------------
-The backend is not connected right. we will integrate the Backend spring boot Api
-in it to interact with the real data from the database. for now, we have used the 
-fake data just to show the UI design of our project. 
+For the backend, Spring boot apis are connected which handles all the business logic
 
 Project structure (high level)
 ------------------------------
