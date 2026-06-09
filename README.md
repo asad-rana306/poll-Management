@@ -41,12 +41,12 @@ The project is fully containerized using Docker. On single command docker can ru
 
 **2.** **Backend Container:** Packages the Java Spring Boot application runtime environment (configured for JDK 25).
 
-**3.** **Database Container:** Deploys an isolated MariaDB instance pre-configured with the required environment schemas.
+**3.** **Database Container:** Containing the credentials of MariaDB run it before the backend Service.
 
 ---
 
-### **•** Main  (`docker-compose.yml`)
-Instead of managing containers individually, a root-level orchestrator file links the frontend, backend, and database services together. It automatically handles networking, exposes the necessary ports, manages persistent data storage, and ensures correct boot ordering (Database → Backend → Frontend).
+### Main  (`docker-compose.yml`)
+Instead of managing containers individually, at root docker-compose.yml file links the frontend, backend, and database services together. (Database ---> Backend ---> Frontend).
 
 #### How to Launch the Entire Project
 Open your terminal at the project root and run. Make sure that you are on the project root
