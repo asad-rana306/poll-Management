@@ -32,3 +32,4 @@ bin/
 
 myproject-frontend/node_modules
 myproject-backend/db/db-data
+db-data
