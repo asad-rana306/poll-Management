@@ -1,23 +1,41 @@
-import { Link, useNavigate } from 'react-router-dom'
-import '../components/Dashboard.css'
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import '../components/Dashboard.css';
 import Navbar from "./Navbar.jsx";
 
 export default function Dashboard() {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    const [username, setUsername] = useState('');
+
+    useEffect(() => {
+        const token = localStorage.getItem('basicAuthToken');
+        if (token) {
+            try {
+                const decodedToken = atob(token);
+                const extractedUsername = decodedToken.split(':')[0];
+                setUsername(extractedUsername);
+            } catch (error) {
+                console.error("Failed to decode token", error);
+            }
+        } else {
+            navigate('/login');
+        }
+    }, [navigate]);
 
     const logout = () => {
-        navigate('/login')
+        localStorage.removeItem('basicAuthToken');
+        navigate('/login');
     };
 
     return (
-
         <div className="min-vh-100 backgroundColor text-light">
             <Navbar/>
             <div className="container mt-5">
                 <div className="row mb-5 align-items-center">
-                    <div className="col"><div>
+                    <div className="col">
+                        <div>
                             <div className="welcome">
-                                <h2 className="welcome">Welcome back, {'Name'}</h2>
+                                <h2 className="welcome text-capitalize">Welcome back, {username || 'User'}</h2>
                             </div>
                         </div>
                     </div>
@@ -41,11 +59,9 @@ export default function Dashboard() {
                                     <Link to="/pending-polls" className="btn poll-list w-75">
                                         View Pending Polls
                                     </Link>
-                                    <div></div>
                                 </div>
                             </div>
                         </div>
-
 
                         <div className="col-md-6 mb-4">
                             <div className="card h-100 polls hovering">
@@ -59,22 +75,22 @@ export default function Dashboard() {
                                     <Link to="/created-poll" className="btn poll-list w-75">
                                         Created Polls
                                     </Link>
-                                    <div></div>
                                 </div>
                             </div>
                         </div>
+
                         <div className="col-12 mt-2">
                             <div className="lastCard p-4">
                                 <div className="d-flex justify-content-between align-items-center">
                                     <div className="d-flex align-items-center gap-3">
                                         <div>
                                             <h6 className="mb-1 Answer-text">Answers of the Polls</h6>
-                                            <small className="resultStatus">Completed or incomplete</small>
+                                            <small className="resultStatus">Click on the button on your right side and see the results there</small>
                                         </div>
                                     </div>
                                     <div>
-                                        <Link to="/poll/1/results" className="btn btn-sm resultButton">
-                                            View Results
+                                        <Link to="/created-poll" className="btn btn-sm resultButton">
+                                            Go to Polls
                                         </Link>
                                     </div>
                                 </div>
@@ -84,11 +100,6 @@ export default function Dashboard() {
                     </div>
                 </div>
             </div>
-            <div style={{ display: 'none' }}>
-                <div>Hidden footer placeholder</div>
-            </div>
-
-
         </div>
     );
 }

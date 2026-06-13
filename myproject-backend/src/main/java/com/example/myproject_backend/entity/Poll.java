@@ -26,6 +26,7 @@ public class Poll {
     private User pollOwner;
     @OneToMany(mappedBy = "poll", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Question> questions = new ArrayList<>();
+    private String OwnerName;
 
     @ManyToMany
     @JoinTable(
@@ -35,5 +36,5 @@ public class Poll {
     )
     private List<User> invitees = new ArrayList<>();
 
-    private boolean isFinished = false;
+    private boolean finished = false;
 }

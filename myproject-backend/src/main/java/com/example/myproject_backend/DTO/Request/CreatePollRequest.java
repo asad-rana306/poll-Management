@@ -7,7 +7,7 @@ import java.util.List;
 @Data
 public class CreatePollRequest {
     private String title;
-    private String descriptioin;
+    private String description;
     private LocalDate dueDate;
     private List<QuestionRequest> questions;
 

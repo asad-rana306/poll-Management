@@ -14,9 +14,13 @@ public class Answer {
     @JoinColumn(name = "question_id")
     private Question question;
 
+    private String value;
     @ManyToOne
     @JoinColumn(name = "response_id")
     private PollResponse pollResponse;
+    private String responderName;
 
-    private String value;
+
+
+
 }

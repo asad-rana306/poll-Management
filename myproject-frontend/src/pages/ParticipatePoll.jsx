@@ -34,7 +34,7 @@ export default function ParticipatePoll() {
                     const data = await response.json();
                     setPolls(data);
                 } else {
-                    setError('Failed to load the poll. It may have been deleted or finished.');
+                    setError('the poll is finished you can respond now');
                 }
             } catch (err) {
                 setError('Network error. Is the server running?');
@@ -60,7 +60,7 @@ export default function ParticipatePoll() {
 
         const unansweredQuestions = poll.questions.filter(q => answers[q.id] === undefined || answers[q.id] === '');
         if (unansweredQuestions.length > 0) {
-            setError('Please answer all the Questions.');
+            setError('answer all the questions.');
             window.scrollTo(0, 0);
             return;
         }
@@ -84,11 +84,11 @@ export default function ParticipatePoll() {
             });
 
             if (response.ok) {
-                alert("Thank you! Your response has been recorded.");
+                alert("your response is recorded.");
                 navigate('/pending-polls');
             } else {
                 const errorData = await response.json();
-                setError(errorData.message || 'Failed to submit your answers. Have you already answered this?');
+                setError(errorData.message || 'failed to reponsed because it is already finished');
                 window.scrollTo(0, 0);
             }
         } catch (err) {
@@ -120,7 +120,7 @@ export default function ParticipatePoll() {
 
                 {error && (
                     <div className="alert shadow-sm mb-4 alert-danger" role="alert">
-                        <strong>Hold on!</strong> {error}
+                        <strong>You are Late</strong> {error}
                     </div>
                 )}
 

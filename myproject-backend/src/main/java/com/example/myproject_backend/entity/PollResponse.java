@@ -20,6 +20,7 @@ public class PollResponse {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+    private String responderName;
 
     @OneToMany(mappedBy = "pollResponse", cascade = CascadeType.ALL)
     private List<Answer> answers = new ArrayList<>();

@@ -8,4 +8,5 @@ import java.util.List;
 public interface ResponseRepository extends JpaRepository<PollResponse, Long> {
     boolean existsByPollIdAndUserUsername(Long pollId, String username);
     List<PollResponse> findByUserUsername(String username);
+    List<PollResponse> findByPollId(Long pollId);
 }

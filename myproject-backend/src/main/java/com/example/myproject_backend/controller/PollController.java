@@ -25,6 +25,7 @@ import java.util.Map;
 @RequestMapping("/api/poll")
 public class PollController {
 
+
     @Autowired
     private PollService pollService;
 
@@ -35,8 +36,9 @@ public class PollController {
     }
 
     @PostMapping("/{pollId}/invite")
-    public ResponseEntity<?> inviteUser(@PathVariable Long pollId, @RequestBody Map<String, String> payload, Principal principal) {
-        String invitedPersonUsername = payload.get("username");
+    public ResponseEntity<?> inviteUser(@PathVariable Long pollId, @RequestBody Map<String, String> userName, Principal principal) {
+        String invitedPersonUsername = userName.get("username");
+        log.info("invited user name is fetched");
         String OwnerUsername = principal.getName();
         log.info("The owner name got extracted" + OwnerUsername);
         pollService.inviteUser(pollId, invitedPersonUsername, OwnerUsername);
@@ -54,9 +56,23 @@ public class PollController {
     @PutMapping("/{pollId}/finish")
     public ResponseEntity<?> finishPoll(@PathVariable Long pollId, Principal principal) {
         pollService.finishPoll(pollId, principal.getName());
-        log.info("Poll with the id: "+pollId + "is finished");
+        log.info("Poll with the id: "+pollId +"is finished");
         return ResponseEntity.ok(200);
     }
+    @GetMapping("/created")
+    public ResponseEntity<List<CreatedPollResponseDto>> getCreatedPolls(Principal principal) {
+        List<CreatedPollResponseDto> myPolls = pollService.getCreatedPolls(principal.getName());
+        log.info("User created poll are fetched ");
+        return ResponseEntity.ok(myPolls);
+    }
+
+    @GetMapping("/{pollId}")
+    public ResponseEntity<FullPollResponseDto> getPollDetails(@PathVariable Long pollId, Principal principal) {
+        FullPollResponseDto pollDetails = pollService.getPollWithQuestions(pollId, principal.getName());
+        log.info("poll with the id: "+pollId+"is fetched");
+        return ResponseEntity.ok(pollDetails);
+    }
+
 
     @PutMapping("/{pollId}")
     public ResponseEntity<?> updatePoll(@PathVariable Long pollId, @RequestBody UpdatePollRequest updationrequest, Principal principal) {
@@ -69,7 +85,7 @@ public class PollController {
     @GetMapping("/pending")
     public ResponseEntity<List<PendingPollResponse>> getPendingPolls(Principal principal) {
         List<PendingPollResponse> pendingPolls = pollService.getPendingPolls(principal.getName());
-        log.info("All Pending polls are fetched");
+        log.info("All Pending polls are fetched ");
         return ResponseEntity.ok(pendingPolls);
     }
 
@@ -81,17 +97,8 @@ public class PollController {
         return ResponseEntity.ok(200);
     }
 
-    @GetMapping("/created")
-    public ResponseEntity<List<CreatedPollResponseDto>> getCreatedPolls(Principal principal) {
-        List<CreatedPollResponseDto> myPolls = pollService.getCreatedPolls(principal.getName());
-        log.info("User created poll are fetched");
-        return ResponseEntity.ok(myPolls);
-    }
-
-    @GetMapping("/{pollId}")
-    public ResponseEntity<FullPollResponseDto> getPollDetails(@PathVariable Long pollId, Principal principal) {
-        FullPollResponseDto pollDetails = pollService.getPollWithQuestions(pollId, principal.getName());
-        log.info("poll with the id: "+pollId+"is fetched");
-        return ResponseEntity.ok(pollDetails);
+    @GetMapping("/{pollId}/results")
+    public org.springframework.http.ResponseEntity<?> getPollResults(@PathVariable Long pollId, java.security.Principal principal) {
+        return org.springframework.http.ResponseEntity.ok(pollService.getPollResults(pollId, principal.getName()));
     }
 }
