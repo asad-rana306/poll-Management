@@ -28,5 +28,7 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+
+
 myproject-frontend/node_modules
 myproject-backend/db/db-data
