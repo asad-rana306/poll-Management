@@ -10,5 +10,6 @@ public class CreatePollRequest {
     private String description;
     private LocalDate dueDate;
     private List<QuestionRequest> questions;
+    private boolean anonymous;
 
 }

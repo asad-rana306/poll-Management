@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -49,6 +50,7 @@ public class PollService {
         poll.setDescription(createPollRequest.getDescription());
         poll.setDueDate(createPollRequest.getDueDate());
         poll.setFinished(false);
+        poll.setAnonymous(createPollRequest.isAnonymous());
         List<Question> questions = createPollRequest.getQuestions().stream().map(questionRequest->{
             Question ques = new Question();
             ques.setText(questionRequest.getText());
@@ -187,6 +189,9 @@ public class PollService {
             throw new RuntimeException("This poll has been finished and is no longer accepting answers.");
         }
 
+        if (poll1.getDueDate() != null && LocalDate.now().isAfter(poll1.getDueDate())) {
+            throw new RuntimeException("This poll has expired. The due date has passed.");
+        }
         Optional<User> user = userRepository.findByUsername(username);
 
         if (!user.isPresent()) {
@@ -262,7 +267,6 @@ public class PollService {
         return createdPoll;
     }
 
-
     public FullPollResponseDto getPollWithQuestions(Long pollId, String username) {
         Optional<Poll> existingPoll = pollRepository.findById(pollId);
 
@@ -307,15 +311,16 @@ public class PollService {
             throw new RuntimeException("Only the owner can view these results");
         }
 
-        Map<String, Object> result = new java.util.HashMap<>();
+        Map<String, Object> result = new HashMap<>();
         result.put("id", poll.getId());
         result.put("title", poll.getTitle());
         result.put("description", poll.getDescription());
         result.put("isFinished", poll.isFinished());
+        result.put("anonymous", poll.isAnonymous());
 
         List<Map<String, Object>> questionsList = new ArrayList<>();
         for (Question q : poll.getQuestions()) {
-            java.util.Map<String, Object> qMap = new java.util.HashMap<>();
+            Map<String, Object> qMap = new HashMap<>();
             qMap.put("id", q.getId());
             qMap.put("text", q.getText());
             qMap.put("type", q.getType().name());
@@ -331,7 +336,11 @@ public class PollService {
         for (PollResponse pr : responses) {
             Map<String, Object> participant = new HashMap<>();
             participant.put("userId", pr.getUser().getId());
-            participant.put("username", pr.getResponderName());
+            if (poll.isAnonymous()) {
+                participant.put("username", "Anonymous Respondent");
+            } else {
+                participant.put("username", pr.getResponderName());
+            }
 
             Map<Long, String> answersMap = new HashMap<>();
 

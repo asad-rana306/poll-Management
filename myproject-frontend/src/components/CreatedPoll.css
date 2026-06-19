@@ -1,10 +1,10 @@
 .pageBackground {
     background-color: #0f172a !important;
 }
+
 .lightPageBackground{
     background-color: rgb(30 41 59 / 0.93) !important;
 }
-
 
 .title {
     color: #f8fafc;
@@ -12,7 +12,6 @@
     font-size: 32px;
     letter-spacing: -0.5px;
 }
-
 
 .pollStartButton {
     background: linear-gradient(135deg, #0ea5e9, #2563eb);
@@ -37,7 +36,7 @@
     transition: transform 0.3s ease;
 }
 
-CardHovering:hover {
+.CardHovering:hover {
     border-color: #38bdf8;
     transform: translateY(-5px);
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2) !important;
@@ -66,11 +65,91 @@ CardHovering:hover {
     color: #cbd5e1;
     font-weight: 600;
 }
+
 .text1 {
     color: #94a3b8;
     font-weight: 500;
 }
-.searching::placeholder{
+
+.searching::placeholder {
     color: white !important;
     font-weight: lighter;
+}
+
+.poll-card-layout {
+    height: auto;
+    min-height: 100%;
+    overflow: visible;
+    padding-bottom: 10px;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.75);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1050;
+}
+
+.modal-content-box {
+    width: 90%;
+    max-width: 450px;
+    border: 1px solid #334155;
+}
+
+.modal-content-large {
+    width: 90%;
+    max-width: 650px;
+    max-height: 90vh;
+    overflow-y: auto;
+    border: 1px solid #334155;
+}
+
+.modal-content-small {
+    width: 90%;
+    max-width: 400px;
+    border: 1px solid #334155;
+}
+
+.modal-header-sticky {
+    background-color: inherit;
+    position: sticky;
+    top: 0;
+    padding-top: 8px;
+    z-index: 10;
+}
+
+.empty-spacer-wrapper {
+    padding-top: 5px;
+}
+
+.modal-form-spacer {
+    height: 2px;
+}
+
+.form-separator {
+    border-top: 1px solid #475569;
+    opacity: 0.25;
+}
+
+.question-edit-box {
+    background-color: #1e293b;
+}
+
+.scrollable-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.list-item-border {
+    border-bottom: 1px solid #334155;
+}
+
+.pagination-wrapper {
+    background-color: #0f172a;
 }

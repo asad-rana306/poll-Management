@@ -12,6 +12,8 @@ export default function ParticipatePoll() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const questionsPerPage = 5;
 
     useEffect(() => {
         const fetchPoll = async () => {
@@ -38,7 +40,6 @@ export default function ParticipatePoll() {
                 }
             } catch (err) {
                 setError('Network error. Is the server running?');
-                console.error(err);
             } finally {
                 setIsLoading(false);
             }
@@ -54,16 +55,31 @@ export default function ParticipatePoll() {
         }));
     };
 
+    const handleNextPage = (e) => {
+        e.preventDefault();
+        setError('');
+        setCurrentPage(prev => prev + 1);
+        window.scrollTo(0, 0);
+    };
+
+    const handlePrevPage = (e) => {
+        e.preventDefault();
+        setError('');
+        setCurrentPage(prev => prev - 1);
+        window.scrollTo(0, 0);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
 
         const unansweredQuestions = poll.questions.filter(q => answers[q.id] === undefined || answers[q.id] === '');
         if (unansweredQuestions.length > 0) {
-            setError('answer all the questions.');
+            setError('Please answer all questions across all pages before submitting.');
             window.scrollTo(0, 0);
             return;
         }
+
         setIsSubmitting(true);
 
         const formattedAnswers = Object.entries(answers).map(([qId, val]) => ({
@@ -84,7 +100,6 @@ export default function ParticipatePoll() {
             });
 
             if (response.ok) {
-                alert("your response is recorded.");
                 navigate('/pending-polls');
             } else {
                 const errorData = await response.json();
@@ -93,7 +108,6 @@ export default function ParticipatePoll() {
             }
         } catch (err) {
             setError('Network error during submission.');
-            console.error(err);
         } finally {
             setIsSubmitting(false);
         }
@@ -113,6 +127,12 @@ export default function ParticipatePoll() {
 
     if (!poll) return null;
 
+    const isExpired = new Date(poll.dueDate) < new Date();
+    const indexOfLastQ = currentPage * questionsPerPage;
+    const indexOfFirstQ = indexOfLastQ - questionsPerPage;
+    const currentQuestions = poll.questions.slice(indexOfFirstQ, indexOfLastQ);
+    const totalPages = Math.ceil(poll.questions.length / questionsPerPage);
+
     return (
         <div className="min-vh-100 BackgroundPage text-light py-5">
             <Navbar />
@@ -120,13 +140,33 @@ export default function ParticipatePoll() {
 
                 {error && (
                     <div className="alert shadow-sm mb-4 alert-danger" role="alert">
-                        <strong>You are Late</strong> {error}
+                        {error}
+                    </div>
+                )}
+
+                {isExpired && (
+                    <div className="alert shadow-sm mb-4 alert-danger" role="alert">
+                        <strong>Poll Expired:</strong> The due date has passed. You can no longer submit answers.
                     </div>
                 )}
 
                 <div className="card shadow-lg mb-5 darkCard border-0">
                     <div className="card-body p-5 ">
-                        <h2 className="card-title text-white mb-3">{poll.title}</h2>
+                        <div className="d-flex justify-content-between align-items-start mb-3">
+                            <h2 className="card-title text-white mb-0">{poll.title}</h2>
+                            <div>
+                                {poll.anonymous && (
+                                    <span className="badge bg-success px-3 py-2 ms-2" style={{ fontSize: '0.85rem' }}>
+                                        🛡️ Anonymous Poll
+                                    </span>
+                                )}
+                                {isExpired && (
+                                    <span className="badge bg-danger px-3 py-2 ms-2" style={{ fontSize: '0.85rem' }}>
+                                        ⏰ Expired
+                                    </span>
+                                )}
+                            </div>
+                        </div>
                         {poll.description && (
                             <p className="text-white mb-0">{poll.description}</p>
                         )}
@@ -134,92 +174,119 @@ export default function ParticipatePoll() {
                 </div>
 
                 <form onSubmit={handleSubmit}>
-                    {poll.questions.map((question, index) => (
-                        <div key={question.id} className="card shadow-sm mb-4 darkCard border-0">
-                            <div className="card-body p-4 p-md-5">
+                    {currentQuestions.map((question, localIndex) => {
+                        const absoluteIndex = indexOfFirstQ + localIndex;
 
-                                <div className="d-flex align-items-center mb-4">
-                                    <span className="badge fs-5 me-3">Q{index + 1}</span>
-                                    <h5 className="mb-0 text-white fs-5">{question.text}</h5>
-                                </div>
+                        return (
+                            <div key={question.id} className="card shadow-sm mb-4 darkCard border-0">
+                                <div className="card-body p-4 p-md-5">
 
-                                <div className="mt-4">
-                                    {question.type === 'TEXT' && (
-                                        <textarea
-                                            className="form-control plainTextQuestionBoz"
-                                            rows="5"
-                                            placeholder="Type your answer here..."
-                                            value={answers[question.id] || ''}
-                                            onChange={(e) => handleAnswerChange(question.id, e.target.value)}
-                                        />
-                                    )}
+                                    <div className="d-flex align-items-center mb-4">
+                                        <span className="badge fs-5 me-3">Q{absoluteIndex + 1}</span>
+                                        <h5 className="mb-0 text-white fs-5">{question.text}</h5>
+                                    </div>
 
-                                    {question.type === 'BOOLEAN' && (
-                                        <div className="d-flex gap-3 ">
-                                            <label className={`optionBox ${answers[question.id] === 'true' ? 'selected-yes' : ''}`}>
-                                                <input
-                                                    className="d-none"
-                                                    type="radio"
-                                                    name={`question-${question.id}`}
-                                                    value="true"
-                                                    checked={answers[question.id] === 'true'}
-                                                    onChange={(e) => handleAnswerChange(question.id, e.target.value)}
-                                                />
-                                                <span className="text1">Yes</span>
-                                            </label>
+                                    <div className="mt-4">
+                                        {question.type === 'TEXT' && (
+                                            <textarea
+                                                className="form-control plainTextQuestionBoz"
+                                                rows="5"
+                                                placeholder="Type your answer here..."
+                                                value={answers[question.id] || ''}
+                                                onChange={(e) => handleAnswerChange(question.id, e.target.value)}
+                                                disabled={isExpired}
+                                            />
+                                        )}
 
-                                            <label className={`optionBox ${answers[question.id] === 'false' ? 'selected-no' : ''}`}>
-                                                <input
-                                                    className="d-none"
-                                                    type="radio"
-                                                    name={`question-${question.id}`}
-                                                    value="false"
-                                                    checked={answers[question.id] === 'false'}
-                                                    onChange={(e) => handleAnswerChange(question.id, e.target.value)}
-                                                />
-                                                <span className="text1">No</span>
-                                            </label>
-                                        </div>
-                                    )}
+                                        {question.type === 'BOOLEAN' && (
+                                            <div className="d-flex gap-3 ">
+                                                <label className={`optionBox ${answers[question.id] === 'true' ? 'selected-yes' : ''} ${isExpired ? 'opacity-50' : ''}`}>
+                                                    <input
+                                                        className="d-none"
+                                                        type="radio"
+                                                        name={`question-${question.id}`}
+                                                        value="true"
+                                                        checked={answers[question.id] === 'true'}
+                                                        onChange={(e) => handleAnswerChange(question.id, e.target.value)}
+                                                        disabled={isExpired}
+                                                    />
+                                                    <span className="text1">Yes</span>
+                                                </label>
 
-                                    {question.type === 'NUMERIC' && (
-                                        <div>
-                                            <div className="d-flex justify-content-between mb-2 px-2 labelTextLast">
-                                                <span>Low</span>
-                                                <span>High</span>
+                                                <label className={`optionBox ${answers[question.id] === 'false' ? 'selected-no' : ''} ${isExpired ? 'opacity-50' : ''}`}>
+                                                    <input
+                                                        className="d-none"
+                                                        type="radio"
+                                                        name={`question-${question.id}`}
+                                                        value="false"
+                                                        checked={answers[question.id] === 'false'}
+                                                        onChange={(e) => handleAnswerChange(question.id, e.target.value)}
+                                                        disabled={isExpired}
+                                                    />
+                                                    <span className="text1">No</span>
+                                                </label>
                                             </div>
-                                            <div className="numeric">
-                                                {[1, 2, 3, 4, 5].map((num) => (
-                                                    <label
-                                                        key={num}
-                                                        className={`number ${Number(answers[question.id]) === num ? 'selected-number' : ''}`}
-                                                    >
-                                                        <input
-                                                            className="d-none"
-                                                            type="radio"
-                                                            name={`question-${question.id}`}
-                                                            value={num}
-                                                            checked={Number(answers[question.id]) === num}
-                                                            onChange={(e) => handleAnswerChange(question.id, parseInt(e.target.value))}
-                                                        />
-                                                        <span className="text1">{num}</span>
-                                                    </label>
-                                                ))}
+                                        )}
+
+                                        {question.type === 'NUMERIC' && (
+                                            <div>
+                                                <div className="d-flex justify-content-between mb-2 px-2 labelTextLast">
+                                                    <span>Low</span>
+                                                    <span>High</span>
+                                                </div>
+                                                <div className="numeric">
+                                                    {[1, 2, 3, 4, 5].map((num) => (
+                                                        <label
+                                                            key={num}
+                                                            className={`number ${Number(answers[question.id]) === num ? 'selected-number' : ''} ${isExpired ? 'opacity-50' : ''}`}
+                                                        >
+                                                            <input
+                                                                className="d-none"
+                                                                type="radio"
+                                                                name={`question-${question.id}`}
+                                                                value={num}
+                                                                checked={Number(answers[question.id]) === num}
+                                                                onChange={(e) => handleAnswerChange(question.id, parseInt(e.target.value))}
+                                                                disabled={isExpired}
+                                                            />
+                                                            <span className="text1">{num}</span>
+                                                        </label>
+                                                    ))}
+                                                </div>
                                             </div>
-                                        </div>
-                                    )}
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
 
                     <div className="d-flex justify-content-between align-items-center mt-5">
-                        <button type="button" className="btn cancelButton" onClick={() => navigate('/pending-polls')}>
-                            Cancel
-                        </button>
-                        <button type="submit" className="btn btn-lg px-5 submitButton shadow" disabled={isSubmitting}>
-                            {isSubmitting ? 'Submitting...' : 'Submit Answers'}
-                        </button>
+                        {currentPage === 1 ? (
+                            <button type="button" className="btn cancelButton" onClick={() => navigate('/pending-polls')}>
+                                Cancel
+                            </button>
+                        ) : (
+                            <button type="button" className="btn btn-secondary px-4" onClick={handlePrevPage}>
+                                &laquo; Previous
+                            </button>
+                        )}
+
+                        {totalPages > 1 && (
+                            <span className="text-light">
+                                Page <strong>{currentPage}</strong> of <strong>{totalPages}</strong>
+                            </span>
+                        )}
+
+                        {currentPage < totalPages ? (
+                            <button type="button" className="btn btn-info px-4" onClick={handleNextPage}>
+                                Next &raquo;
+                            </button>
+                        ) : (
+                            <button type="submit" className="btn btn-lg px-5 submitButton shadow" disabled={isSubmitting || isExpired}>
+                                {isExpired ? 'Poll Expired' : (isSubmitting ? 'Submitting...' : 'Submit Answers')}
+                            </button>
+                        )}
                     </div>
                 </form>
             </main>

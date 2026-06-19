@@ -6,9 +6,11 @@ export default function Login() {
     const navigate = useNavigate();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [errorMsg, setErrorMsg] = useState('');
 
     async function loginUser(e) {
         e.preventDefault();
+        setErrorMsg('');
         const credentials = btoa(`${username}:${password}`);
 
         try {
@@ -17,18 +19,19 @@ export default function Login() {
                 headers: {
                     'Authorization': `Basic ${credentials}`,
                     'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
                 },
                 credentials: 'include',
             });
 
             if (response.ok) {
                 localStorage.setItem('basicAuthToken', credentials);
-                console.log("login successfull");
                 navigate('/dashboard');
             } else {
-                console.error('Invalid credentials');
+                setErrorMsg('Invalid username or password.');
             }
         } catch (error) {
+            setErrorMsg('Network error. Is the server running?');
             console.error('Network error:', error);
         }
     }
@@ -39,6 +42,12 @@ export default function Login() {
                 <h2 className="heading">Poll Manager</h2>
 
                 <form onSubmit={loginUser}>
+                    {errorMsg && (
+                        <div style={{ color: '#ef4444', backgroundColor: '#fee2e2', padding: '10px', borderRadius: '5px', marginBottom: '15px', textAlign: 'center', border: '1px solid #fca5a5' }}>
+                            {errorMsg}
+                        </div>
+                    )}
+
                     <div className="input">
                         <label className="label">Name</label>
                         <input

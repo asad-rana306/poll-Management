@@ -13,6 +13,9 @@ export default function CreatePoll() {
     const [error, setError] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    // NEW ANONYMOUS STATE
+    const [isAnonymous, setIsAnonymous] = useState(false);
+
     const handleAddQuestion = () => {
         setQuestions([...questions, { text: '', type: 'TEXT' }]);
     };
@@ -57,7 +60,8 @@ export default function CreatePoll() {
         setIsSubmitting(true);
 
         try {
-            const payload = { title, description, dueDate, questions };
+            // INCLUDED isAnonymous IN PAYLOAD
+            const payload = { title, description, dueDate, questions, anonymous: isAnonymous };
 
             const response = await fetch('http://localhost:8080/api/poll/create-poll', {
                 method: 'POST',
@@ -83,7 +87,6 @@ export default function CreatePoll() {
             setIsSubmitting(false);
         }
     };
-
 
     return (
         <div className="min-vh-100 backgroundPage text-light">
@@ -139,6 +142,20 @@ export default function CreatePoll() {
                                     required
                                 />
                             </div>
+
+                            <div className="mb-2 mt-4 form-check d-flex align-items-center">
+                                <input
+                                    className="form-check-input mt-0"
+                                    type="checkbox"
+                                    id="anonCheckCreate"
+                                    style={{ width: '1.2rem', height: '1.2rem', cursor: 'pointer' }}
+                                    checked={isAnonymous}
+                                    onChange={(e) => setIsAnonymous(e.target.checked)}
+                                />
+                                <label className="form-check-label  ms-2 fw-bold" htmlFor="anonCheckCreate" style={{ cursor: 'pointer' , color: "white"}}>
+                                    Make Responses Anonymous
+                                </label>
+                            </div>
                         </div>
                     </section>
 
@@ -185,7 +202,6 @@ export default function CreatePoll() {
                                                     value={question.type}
                                                     onChange={(e) => handleQuestionChange(index, 'type', e.target.value)}
                                                 >
-                                                    {/* CRUCIAL FIX: These values must match your Java Enum EXACTLY */}
                                                     <option value="TEXT">Text</option>
                                                     <option value="BOOLEAN">Yes or No</option>
                                                     <option value="NUMERIC">Numbers 1 to 5</option>

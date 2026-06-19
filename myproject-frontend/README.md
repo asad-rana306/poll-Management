@@ -49,13 +49,12 @@ Flow
 ----
 1. User can sign up or log in.
 2. After logging in, they see a dashboard with options to view pending polls and Created polls box.
-On the dashboard screen there is button to create a new poll and on the botton it can view the results
-of the polls that are solved by other users.
-3. After clicking create new poll, user can fill the form and submit it to create a new poll.
-4. After clicking to created poll on the dashboard. A user can see his created poll from where he can invite people to his created poll
+On the dashboard screen there is button to create a new poll. where user can create the poll
+3. After clicking create new poll, user can fill the form which consists of title, description, due date and questions, which he can submit it to create a new poll.
+4. After clicking to created poll on the dashboard. A user can see his created poll from where he can invite people to his created poll.
 5. He can finish the poll, update the poll and delete the poll.
-6. After clicking pending polls, user can see the list of pending polls and can click on any poll to participate in it.
+6. After clicking pending polls on the dashboard, user can see the list of pending polls and can click on any poll to participate in it.
 7. After participating in the poll, user will see the list of question which he can solve and then he can submit
-8. After clicking the view results, user can see two tabs Aggregate Summary and Individual response
+8. After clicking the view results in the created poll page, user can see two tabs Aggregate Summary and Individual response
 9. On the Aggregate Summary, user can see the summary of poll in percetages(for the true false question) and rating(for the numeric questions)
 10. On the Individual response, user can see the list of responses of all the users who participated in the poll with the question and there answer which they give.

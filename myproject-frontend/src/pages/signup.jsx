@@ -15,6 +15,7 @@ export default function Signup() {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+              'X-Requested-With': 'XMLHttpRequest',
           },
           body: JSON.stringify({ username, password }),
         });

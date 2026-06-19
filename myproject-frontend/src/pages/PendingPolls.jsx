@@ -38,7 +38,6 @@ export default function PendingPolls() {
                 }
             } catch (err) {
                 setError('Network error. Is the server running?');
-                console.error(err);
             } finally {
                 setIsLoading(false);
             }
@@ -82,45 +81,60 @@ export default function PendingPolls() {
                 ) : (
                     <div>
                         <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                            {polls.map((poll) => (
-                                <div className="col" key={poll.id}>
-                                    <div className="card h-100 cardBackgroundColor CardHovering shadow">
-                                        <div className="card-body d-flex flex-column p-4">
+                            {polls.map((poll) => {
+                                const isExpired = new Date(poll.dueDate) < new Date();
 
-                                            <div className="mb-3">
-                                                <h5 className="card-title pollTitle">
-                                                    <span>{poll.title}</span>
-                                                </h5>
-                                            </div>
+                                return (
+                                    <div className="col" key={poll.id}>
+                                        <div className="card h-100 cardBackgroundColor CardHovering shadow">
+                                            <div className="card-body d-flex flex-column p-4">
 
-                                            <div className="mt-2 mb-4 cardInsideCard">
-                                                <div className="d-flex align-items-center mb-2">
+                                                <div className="mb-3 d-flex justify-content-between align-items-start">
+                                                    <h5 className="card-title pollTitle">
+                                                        <span>{poll.title}</span>
+                                                    </h5>
                                                     <div>
-                                                        <span className="textColor1">Due: </span>
-                                                        <span className="dateText">{formatDate(poll.dueDate)}</span>
+                                                        {poll.anonymous && (
+                                                            <span className="badge bg-secondary ms-1" style={{ fontSize: '0.7rem' }}>Anonymous</span>
+                                                        )}
+                                                        {isExpired && (
+                                                            <span className="badge bg-danger ms-1" style={{ fontSize: '0.7rem' }}>Expired</span>
+                                                        )}
                                                     </div>
                                                 </div>
 
-                                                <div className="d-flex align-items-center">
-                                                    <div>
-                                                        <span className="textColor1">Questions: </span>
-                                                        <span className="badge fs-5">{poll.numberOfQuestions}</span>
+                                                <div className="mt-2 mb-4 cardInsideCard">
+                                                    <div className="d-flex align-items-center mb-2">
+                                                        <div>
+                                                            <span className="textColor1">Due: </span>
+                                                            <span className={`dateText ${isExpired ? 'text-danger' : ''}`}>{formatDate(poll.dueDate)}</span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="d-flex align-items-center">
+                                                        <div>
+                                                            <span className="textColor1">Questions: </span>
+                                                            <span className="badge fs-5">{poll.numberOfQuestions}</span>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
 
-                                            <div className="mt-auto">
-                                                <Link
-                                                    to={`/poll/${poll.id}/participate`}
-                                                    className="btn pollStartButton w-100"
-                                                >
-                                                    Start Now
-                                                </Link>
+                                                <div className="mt-auto">
+                                                    {isExpired ? (
+                                                        <button className="btn btn-secondary w-100" disabled>
+                                                            Poll Expired
+                                                        </button>
+                                                    ) : (
+                                                        <Link to={`/poll/${poll.id}/participate`} className="btn pollStartButton w-100">
+                                                            Start Now
+                                                        </Link>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </div>
                 )}

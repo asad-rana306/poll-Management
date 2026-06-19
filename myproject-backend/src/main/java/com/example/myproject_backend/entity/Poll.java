@@ -37,4 +37,5 @@ public class Poll {
     private List<User> invitees = new ArrayList<>();
 
     private boolean finished = false;
+    private boolean anonymous;
 }
