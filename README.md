@@ -127,7 +127,7 @@ Flow
 7. After participating in the poll, user will see the list of question which he can solve and then he can submit
 8. After clicking the view results in the created poll page, user can see two tabs Aggregate Summary and Individual response
 9. On the Aggregate Summary, user can see the summary of poll in percetages(for the true false question) and rating(for the numeric questions)
-10. On t
+10. On the Individual response, user can see the list of responses of all the users who participated in the poll with the question and there answer which they give.
 
 
 
